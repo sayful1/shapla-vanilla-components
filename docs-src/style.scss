@@ -1,7 +1,11 @@
 @use "../src/index" as shapla;
 
+@include shapla.minireset;
+
 @include shapla.spinner;
+@include shapla.delete-icon;
 @include shapla.notification;
+@include shapla.modal;
 
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -11,7 +15,6 @@
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -78,15 +81,17 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+
+:root {
+  color: #213547;
+  background-color: #ffffff;
+}
+
 @media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+}
+
+
+.my-4 {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }

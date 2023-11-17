@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "name": "@shapla/vanilla-components",
   "description": "A collection of reusable vanilla javaScript components.",
   "contributors": [
@@ -11,7 +11,9 @@
   ],
   "keywords": [
     "spinner",
-    "notification"
+    "notification",
+    "confirm",
+    "alert"
   ],
   "license": "MIT",
   "repository": {

@@ -1,64 +1,22 @@
-import {createEl} from "../utils";
+import {ModalCardInterface, ModalConfirmPropsInterface} from './interfaces.ts';
+import createCardModal from './modal-card.ts'
+import createConfirmModal from './modal-confirm.ts'
+import createBoxModal from './modal-box.ts'
+import {closeModal, refreshBodyClass} from "./modal-core.ts";
 
-declare global {
-  interface ElementEventMap {
-    "close.ShaplaModal": CustomEvent<{ via: string }>
-  }
-}
-
-const refreshBodyClass = (active: boolean = false) => {
-  const body = document.querySelector("body") as HTMLBodyElement;
-  if (active) {
-    return body.classList.add("has-shapla-modal");
-  }
-  setTimeout(() => {
-    if (body.querySelectorAll(".shapla-modal.is-active").length === 0) {
-      body.classList.remove("has-shapla-modal");
-    }
-  }, 50);
-};
-
-const closeModal = (modal: Element | null, detail = {}) => {
-  if (modal && modal.classList.contains('is-active')) {
-    modal.classList.remove('is-active');
-    modal.dispatchEvent(new CustomEvent('close.ShaplaModal', {detail: detail}));
-    refreshBodyClass(false);
-  }
-}
-
-const createModal = (appendTo: HTMLElement | null = null, id: null | string = null, type: string = 'box') => {
-  const modalId = id ? id.replace('#', '') : 'shapla-modal';
-  const bgEl = createEl('div', {class: 'shapla-modal-background is-dark'});
-  const closeEl = createEl('span', {class: 'shapla-delete-icon is-large is-fixed', 'aria-label': 'close'});
-  const modal = createEl(
-    'div',
-    {id: modalId, class: 'shapla-modal',},
-    [
-      bgEl,
-      createEl('div', {class: `shapla-modal-content is-large shapla-modal-${type}`}),
-    ]
-  );
-
-  if (appendTo) {
-    appendTo.append(modal)
-  } else {
-    document.body.append(modal);
-  }
-
-  bgEl.addEventListener('click', () => closeModal(modal, {via: 'background'}))
-  closeEl.addEventListener('click', () => closeModal(modal, {via: 'close-button'}))
-  return modal;
-}
 
 /**
  * Allow to close modal by clicking any child element with attribute 'data-close'
  */
 document.addEventListener('click', (event: MouseEvent) => {
   const element = event.target as HTMLElement;
-  if (element.hasAttribute('data-close')) {
+  if ('shapla-modal' === element.getAttribute('data-close')) {
     event.preventDefault();
     const closestModal = element.closest('.shapla-modal.is-active') as HTMLElement;
-    closeModal(closestModal, {via: 'data-close-attribute'})
+    let via = element.hasAttribute('data-close-element') ?
+      element.getAttribute('data-close-element') :
+      'data-close-attribute';
+    closeModal(closestModal, {via: via ?? 'data-close-attribute'})
   }
 });
 
@@ -74,8 +32,33 @@ document.addEventListener('keydown', (event: KeyboardEvent) => {
   }
 })
 
+class Modal {
+  static refreshBodyClass(active: boolean = false) {
+    refreshBodyClass(active)
+  }
+
+  static close(modal: Element | null, detail = {}) {
+    closeModal(modal, detail);
+  }
+
+  static box(content: string = '', args: ModalCardInterface): HTMLElement {
+    return createBoxModal(content, args);
+  }
+
+  static card(args: ModalCardInterface): HTMLElement {
+    return createCardModal(args);
+  }
+
+  static confirm(args: ModalConfirmPropsInterface): HTMLElement {
+    return createConfirmModal(args);
+  }
+}
+
 export {
   refreshBodyClass,
-  closeModal
+  closeModal,
+  createBoxModal,
+  createCardModal,
+  createConfirmModal
 }
-export default createModal;
+export default Modal;
