@@ -1,5 +1,6 @@
 import './style.scss'
-import {Dialog, ShaplaModal, Spinner} from "../src/index.ts";
+import '../src/wc.ts'
+import {Dialog, Modal, Spinner} from "../src/index.ts";
 import {Notify} from "../src";
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
@@ -69,14 +70,14 @@ if (button5) {
 const button6 = document.querySelector<HTMLButtonElement>('#show-modal');
 if (button6) {
   button6.addEventListener('click', () => {
-    const modal = ShaplaModal.box('Add some html element.', {type: "box"});
+    const modal = Modal.box('Add some html element.', {type: "box"});
   })
 }
 
 const button7 = document.querySelector<HTMLButtonElement>('#show-card-modal');
 if (button7) {
   button7.addEventListener('click', () => {
-    const modal = ShaplaModal.card({
+    const modal = Modal.card({
       type: "card",
       body: 'Add some html element.',
       header: 'Add new post'

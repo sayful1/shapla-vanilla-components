@@ -8,7 +8,9 @@ declare global {
   }
 }
 
-const refreshBodyClass = (active: boolean = false) => {
+let isModalEventLoaded = false;
+
+const refreshModalBodyClass = (active: boolean = false) => {
   const body = document.querySelector("body") as HTMLBodyElement;
   if (active) {
     return body.classList.add("has-shapla-modal");
@@ -20,12 +22,49 @@ const refreshBodyClass = (active: boolean = false) => {
   }, 50);
 };
 
+/**
+ * Register keyboard and click event to auto close modal
+ * Make sure to run this event only once
+ */
+const closeModalOnClickAndKeyboardEvent = () => {
+  if (!isModalEventLoaded) {
+    window.console.log('Modal: MouseEvent and KeyboardEvent are registered.')
+    isModalEventLoaded = true
+    /**
+     * Allow to close modal by clicking any child element with attribute 'data-close'
+     */
+    document.addEventListener('click', (event: MouseEvent) => {
+      const element = event.target as HTMLElement;
+      if ('shapla-modal' === element.getAttribute('data-close')) {
+        event.preventDefault();
+        const closestModal = element.closest('.shapla-modal.is-active') as HTMLElement;
+        let via = element.hasAttribute('data-close-element') ?
+          element.getAttribute('data-close-element') :
+          'data-close-attribute';
+        closeModal(closestModal, {via: via ?? 'data-close-attribute'})
+      }
+    });
+
+    /**
+     * Close last modal when press 'Escape' key
+     */
+    document.addEventListener('keydown', (event: KeyboardEvent) => {
+      if (['Escape', 'Esc'].includes(event.key)) {
+        const modals = document.body.querySelectorAll('.shapla-modal.is-active');
+        if (modals.length) {
+          closeModal(modals[modals.length - 1], {via: 'escape-key-press'})
+        }
+      }
+    })
+  }
+}
+
 const closeModal = (modal: Element | null, detail = {}) => {
   if (modal && modal.classList.contains('is-active')) {
     modal.classList.remove('is-active');
     modal.dispatchEvent(new CustomEvent('close.ShaplaModal', {detail: detail}));
     modal.remove();
-    refreshBodyClass(false);
+    refreshModalBodyClass(false);
   }
 }
 
@@ -65,7 +104,8 @@ const modalRootEl = (props: ModalPropsInterface, child: HTMLElement | string) =>
   const modalId = props.id ? props.id.replace('#', '') : 'shapla-modal';
   const bgEl = modalBackgroundEl(props);
   const closeEl = modalCloseEl('large', true);
-  return createEl(
+
+  const rootEl = createEl(
     'div',
     {id: modalId, class: 'shapla-modal is-active'},
     [
@@ -74,6 +114,9 @@ const modalRootEl = (props: ModalPropsInterface, child: HTMLElement | string) =>
       child
     ]
   );
+  closeModalOnClickAndKeyboardEvent();
+  window.console.log('modal root element created.')
+  return rootEl;
 }
 
 const modalDefaults = (): ModalPropsInterface => {
@@ -90,7 +133,7 @@ const modalDefaults = (): ModalPropsInterface => {
 }
 
 export {
-  refreshBodyClass,
+  refreshModalBodyClass,
   closeModal,
   contentClasses,
   modalCloseEl,

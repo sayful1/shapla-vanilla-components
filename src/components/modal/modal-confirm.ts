@@ -10,7 +10,6 @@ const modalConfirmDefaults = (): ModalConfirmPropsInterface => {
     icon: 'primary',
     confirmButton: 'Ok',
     cancelButton: 'Cancel',
-    backgroundTheme: 'light',
     contentSize: 'small',
   }
 }
