@@ -1,3 +1,4 @@
+type TYPE_CHILDREN_ELEMENT = string | HTMLElement;
 /**
  * Create dynamic element
  *
@@ -9,7 +10,7 @@
 const createEl = (
   tagName: string,
   attributes: Record<string, string> = {},
-  children: (string | HTMLElement)[] = []
+  children: TYPE_CHILDREN_ELEMENT[] = []
 ): HTMLElement => {
   let el = document.createElement(tagName);
   if (Object.keys(attributes).length) {
